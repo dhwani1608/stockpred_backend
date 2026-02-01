@@ -5,8 +5,11 @@ from app.database.session import engine
 from app.database.base import Base
 from app.api import predict, users, watchlist, history
 
-# Create tables
-Base.metadata.create_all(bind=engine)
+# Create tables (only if database is configured)
+if engine is not None:
+    Base.metadata.create_all(bind=engine)
+else:
+    print("Warning: Database not configured - running without database support")
 
 # Initialize app
 app = FastAPI(
