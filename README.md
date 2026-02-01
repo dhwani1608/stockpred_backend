@@ -13,37 +13,6 @@ A FastAPI-based backend for stock price direction prediction using XGBoost machi
 - **Statistics**: Track prediction accuracy and signal performance
 - **REST API**: Full FastAPI with Swagger documentation
 
-## Project Structure
-
-```
-backend/
-├── app/
-│   ├── main.py              # FastAPI entry point
-│   ├── config.py            # Configuration and env variables
-│   ├── api/                 # Route handlers
-│   │   ├── predict.py       # Prediction endpoints
-│   │   ├── users.py         # Auth & user management
-│   │   ├── watchlist.py     # Watchlist management
-│   │   ├── history.py       # Prediction history
-│   ├── services/            # Business logic
-│   │   ├── ml_service.py    # Model inference
-│   │   ├── market_data.py   # Live data fetching
-│   │   ├── scheduler.py     # Background jobs
-│   ├── models/              # Database models
-│   │   ├── user.py
-│   │   ├── prediction.py
-│   │   ├── watchlist.py
-│   ├── database/            # Database configuration
-│   │   ├── session.py
-│   │   ├── base.py
-│   └── utils/               # Utilities
-│       └── features.py      # Feature engineering
-├── model/
-│   └── xgboost_5day_direction.pkl
-├── requirements.txt
-└── README.md
-```
-
 ## Installation
 
 1. **Install dependencies**:
@@ -148,7 +117,3 @@ curl -X POST "http://localhost:8000/api/predict/" \
 - [ ] Rate limiting and quotas
 - [ ] Email notifications
 - [ ] Mobile app integration
-
-## License
-
-MIT
