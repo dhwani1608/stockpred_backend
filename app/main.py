@@ -35,6 +35,7 @@ app.include_router(history.router)
 
 
 @app.get("/")
+@app.head("/")
 def root():
     return {
         "message": "Stock Prediction API",
@@ -44,6 +45,7 @@ def root():
 
 
 @app.get("/health")
+@app.head("/health")
 def health_check():
     return {"status": "healthy"}
 
