@@ -7,7 +7,17 @@ from app.api import predict, users, watchlist, history
 
 # Create tables (only if database is configured)
 if engine is not None:
-    Base.metadata.create_all(bind=engine)
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception as e:
+        print(f"Warning: Table creation failed, attempting to drop and recreate: {e}")
+        try:
+            # Drop all tables and recreate (only safe for new deployments)
+            Base.metadata.drop_all(bind=engine)
+            Base.metadata.create_all(bind=engine)
+            print("Successfully recreated database tables")
+        except Exception as e2:
+            print(f"Error: Could not recreate tables: {e2}")
 else:
     print("Warning: Database not configured - running without database support")
 
