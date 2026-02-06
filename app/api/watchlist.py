@@ -13,7 +13,7 @@ class WatchlistCreate(BaseModel):
 
 
 class WatchlistResponse(BaseModel):
-    id: int
+    id: str
     user_id: int
     name: str
     symbols: list[str] = []
@@ -38,7 +38,7 @@ def create_watchlist(
 
 
 @router.get("/{watchlist_id}", response_model=WatchlistResponse)
-def get_watchlist(watchlist_id: int, db: Session = Depends(get_db)):
+def get_watchlist(watchlist_id: str, db: Session = Depends(get_db)):
     """Get a watchlist by ID."""
     watchlist = db.query(Watchlist).filter(Watchlist.id == watchlist_id).first()
     if not watchlist:
@@ -48,7 +48,7 @@ def get_watchlist(watchlist_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/{watchlist_id}/symbols")
-def add_symbol(watchlist_id: int, symbol: str, db: Session = Depends(get_db)):
+def add_symbol(watchlist_id: str, symbol: str, db: Session = Depends(get_db)):
     """Add a symbol to watchlist."""
     watchlist = db.query(Watchlist).filter(Watchlist.id == watchlist_id).first()
     if not watchlist:
@@ -60,7 +60,7 @@ def add_symbol(watchlist_id: int, symbol: str, db: Session = Depends(get_db)):
 
 
 @router.delete("/{watchlist_id}/symbols/{symbol}")
-def remove_symbol(watchlist_id: int, symbol: str, db: Session = Depends(get_db)):
+def remove_symbol(watchlist_id: str, symbol: str, db: Session = Depends(get_db)):
     """Remove a symbol from watchlist."""
     # Implement symbol removal logic
     return {"status": "symbol removed"}
