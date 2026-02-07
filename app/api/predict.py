@@ -36,7 +36,7 @@ class PredictionResponse(BaseModel):
 @router.post("/", response_model=PredictionResponse)
 def predict(
     input_data: PredictionInput,
-    db: Session = Depends(get_db)
+    db: Optional[Session] = Depends(get_db)
 ) -> PredictionResponse:
     """
     Make a prediction for a stock symbol.
@@ -73,25 +73,26 @@ def predict(
     # Make prediction
     direction, confidence, signal = ml_service.predict(features)
     
-    # Store in database
-    pred = Prediction(
-        symbol=symbol,
-        direction=direction,
-        confidence=confidence,
-        signal=signal,
-        close_price=features["Close"],
-        return_1=features["Return_1"],
-        return_5=features["Return_5"],
-        ma_10=features["MA_10"],
-        ma_20=features["MA_20"],
-        ema_10=features["EMA_10"],
-        volatility_10=features["Volatility_10"],
-        lag_1=features["Lag_1"],
-        lag_5=features["Lag_5"],
-    )
-    db.add(pred)
-    db.commit()
-    db.refresh(pred)
+    # Store in database if configured
+    if db is not None:
+        pred = Prediction(
+            symbol=symbol,
+            direction=direction,
+            confidence=confidence,
+            signal=signal,
+            close_price=features["Close"],
+            return_1=features["Return_1"],
+            return_5=features["Return_5"],
+            ma_10=features["MA_10"],
+            ma_20=features["MA_20"],
+            ema_10=features["EMA_10"],
+            volatility_10=features["Volatility_10"],
+            lag_1=features["Lag_1"],
+            lag_5=features["Lag_5"],
+        )
+        db.add(pred)
+        db.commit()
+        db.refresh(pred)
     
     return {
         "symbol": symbol,
@@ -103,7 +104,7 @@ def predict(
 
 
 @router.post("/batch")
-def predict_batch(input_data: BatchPredictionInput, db: Session = Depends(get_db)):
+def predict_batch(input_data: BatchPredictionInput, db: Optional[Session] = Depends(get_db)):
     """Make predictions for multiple symbols."""
     results = []
     for idx, symbol in enumerate(input_data.symbols):
@@ -120,8 +121,10 @@ def predict_batch(input_data: BatchPredictionInput, db: Session = Depends(get_db
 
 
 @router.get("/history/{symbol}")
-def get_prediction_history(symbol: str, limit: int = 10, db: Session = Depends(get_db)):
+def get_prediction_history(symbol: str, limit: int = 10, db: Optional[Session] = Depends(get_db)):
     """Get recent predictions for a symbol."""
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database not configured")
     predictions = db.query(Prediction).filter(
         Prediction.symbol == symbol.upper()
     ).order_by(Prediction.created_at.desc()).limit(limit).all()

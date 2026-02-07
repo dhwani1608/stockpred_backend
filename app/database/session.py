@@ -24,5 +24,12 @@ except Exception as e:
 
 def get_db():
     if SessionLocal is None:
-        raise RuntimeError("Database not configured")
+        # Allow app to run without database support.
+        yield None
+        return
+
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
         db.close()
